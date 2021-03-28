@@ -88,3 +88,35 @@ plt.show()
 df['user-id'].value_counts().plot(kind='bar',
                                   title='Training Examples by User')
 plt.show()
+
+def plot_activity(activity, data):
+    fig, (ax0, ax1, ax2) = plt.subplots(nrows=3,
+                                        figsize=(15, 10),
+                                        sharex=True)
+    plot_axis(ax0, data['timestamp'], data['x-axis'], 'X-Axis')
+    plot_axis(ax1, data['timestamp'], data['y-axis'], 'Y-Axis')
+    plot_axis(ax2, data['timestamp'], data['z-axis'], 'Z-Axis')
+    plt.subplots_adjust(hspace=0.2)
+    fig.suptitle(activity)
+    plt.subplots_adjust(top=0.90)
+    plt.show()
+
+
+def plot_axis(ax, x, y, title):
+    ax.plot(x,y,'r')
+    ax.set_title(title)
+    ax.xaxis.set_visible(False)
+    ax.set_ylim([min(y) - np.std(y), max(y) + np.std(y)])
+    ax.set_xlim([min(x), max(x)])
+    ax.grid(True)
+
+for activity in np.unique(df['activity']):
+    subset = df[df['activity'] == activity][:180]
+    plot_activity(activity, subset)
+
+# Define column name of the label vector
+LABEL = 'ActivityEncoded'
+# Transform the labels from String to Integer via LavelEncoder
+le = preprocessing.LabelEncoder()
+# Add a new column to the existing DataFrame with the encoded values
+df[LABEL] = le.fit_transform(df['activity'].values.ravel())
